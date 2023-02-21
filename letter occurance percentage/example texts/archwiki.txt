@@ -1,0 +1,942 @@
+
+
+    Home
+    Packages
+    Forums
+    Wiki
+    Bugs
+    Security
+    AUR
+    Download
+
+Jump to content
+Toggle sidebar
+
+    Create account
+
+Personal tools
+
+Contents
+Beginning
+1Installation
+
+2Configuration
+
+3Specific devices
+
+4Tips and Tricks
+
+5Troubleshooting
+
+1 language
+
+Gamepad
+
+    Page
+    Discussion
+
+    Read
+    View source
+    View history
+
+(Redirected from Game controller)
+
+Many gamepads are working out-of-the-box nowadays, but there are still many potential problems and sources for errors since gamepad support in applications varies by a lot.
+
+Tango-view-fullscreen.png
+This article or section needs expansion.
+Tango-view-fullscreen.png
+Reason: Need info about differences between API, how to switch between them. (Discuss in Talk:Gamepad#Joystick API vibration support)
+
+Linux has two different input systems for gamepads – the original Joystick interface and the newer evdev-based interface.
+
+/dev/input/jsX maps to the Joystick API interface and /dev/input/event* maps to the evdev ones (this also includes other input devices such as mice and keyboards). Symbolic links to those devices are also available in /dev/input/by-id/ and /dev/input/by-path/ where the legacy Joystick API has names ending with -joystick while the evdev have names ending with -event-joystick.
+
+Most new games will default to the evdev interface as it gives more detailed information about the buttons and axes available and also adds support for force feedback.
+
+While SDL1 defaults to evdev interface you can force it to use the old Joystick API by setting the environment variable SDL_JOYSTICK_DEVICE=/dev/input/js0. This can help many games such as X3. SDL2 supports only the new evdev interface.
+Installation
+
+Unless you are using very old joystick that uses Gameport or a proprietary USB protocol, you will need just the generic USB Human Interface Device (HID) modules.
+
+For an extensive overview of all joystick related modules in Linux, you will need access to the Linux kernel sources — specifically the Documentation section. Unfortunately, official kernel packages do not include what we need. If you have the kernel sources downloaded, have a look at Documentation/input/joydev/. You can browse the kernel source tree at kernel.org by clicking the "browse" (cgit - the git frontend) link for the kernel that you are using, then clicking the "tree" link near the top. Alternatively, see documentation from the latest kernel.
+
+Some joysticks need specific modules, such as the Microsoft Sidewinder controllers (sidewinder), or the Logitech digital controllers (adi). Many older joysticks will work with the simple analog module. If your joystick is plugging in to a gameport provided by your soundcard, you will need your soundcard drivers loaded — however, some cards, like the Soundblaster Live, have a specific gameport driver (emu10k1-gp). Older ISA soundcards may need the ns558 module, which is a standard gameport module.
+
+As you can see, there are many different modules related to getting your joystick working in Linux, so everything is not covered here. Please have a look at the documentation mentioned above for details.
+Loading the modules for analogue devices
+
+You need to load a module for your gameport (ns558, emu10k1-gp, cs461x, etc...), a module for your joystick (analog, sidewinder, adi, etc...), and finally the kernel joystick device driver (joydev). You can load the module at boot, or simply modprobe it. The gameport module should load automatically, as this is a dependency of the other modules.
+USB gamepads
+
+You need to get USB working, and then modprobe your gamepad driver, which is usbhid, as well as joydev. If you use a usb mouse or keyboard, usbhid will be loaded already and you just have to load the joydev module.
+Note: If your Xbox 360 gamepad is connected with the Play&Charge USB cable it will show up in lsusb but it will not show up as an input device in /dev/input/js*, see #Xbox 360 controller.
+Configuration
+Testing
+
+Once the modules are loaded, you should be able to find a new device: /dev/input/js0 and a file ending with -event-joystick in /dev/input/by-id directory. You can simply cat those devices to see if the joystick works — move the stick around, press all the buttons - you should see mojibake printed when you move the sticks or press buttons.
+
+If you get a permission error, see #Device permissions.
+
+Both interfaces are also supported in Wine and reported as separate devices. You can test them (including vibration feedback) with wine control joy.cpl.
+Joystick API
+
+There are a lot of applications that can test this old API, jstest from the joyutils package is the simplest one. If the output is unreadable because the line printed is too long you can also use graphical tools. KDE Plasma has a built in one in System Settings > Input Devices > Game Controller. There is jstest-gtk-gitAUR as an alternative.
+
+Use of jstest is fairly simple, you just run jstest /dev/input/js0 and it will print a line with state of all the axes (normalised to {-32767,32767}) and buttons.
+
+After you start jstest-gtk, it will just show you a list of joysticks available, you just need to select one and press Properties.
+evdev API
+
+The new 'evdev' API can be tested using the SDL2 joystick test application or using evtest from evtest or evtest-qt from evtest-qt-gitAUR. Install sdl2-jstest-gitAUR and then run sdl2-jstest --test 0. Use sdl2-jstest --list to get IDs of other controllers if you have multiple ones connected.
+
+To test force feedback on the device, use fftest from linuxconsole:
+
+$ fftest /dev/input/by-id/usb-*event-joystick
+
+HTML5 Gamepad API
+
+Go to https://gamepad-tester.com/. Currently, testing vibration and producing a visual of the gamepad is supported in Chromium but not Firefox. Additionally, as of version 107.0.5304.121-1, Chromium can read Joystick devices but not evdev.
+Setting up deadzones and calibration
+
+If you want to set up the deadzones (or remove them completely) of your analog input you have to do it separately for the xorg (for mouse and keyboard emulation), Joystick API and evdev API.
+Wine deadzones
+
+Add the following registry entry and set it to a string from 0 to 10000 (affects all axes):
+
+HKEY_CURRENT_USER\Software\Wine\DirectInput\DefaultDeadZone
+
+Source: UsefulRegistryKeys
+Xorg deadzones
+
+Add a similar line to /etc/X11/xorg.conf.d/51-joystick.conf (create if it does not exist):
+
+/etc/X11/xorg.conf.d/51-joystick.conf
+
+Section "InputClass"
+    Option "MapAxis1" "deadzone=1000"
+EndSection
+
+1000 is the default value, but you can set anything between 0 and 30 000. To get the axis number see the "Testing Your Configuration" section of this article. If you already have an option with a specific axis just type in the deadzone=value at the end of the parameter separated by a space.
+Joystick API deadzones
+
+The easiest way is using jstest-gtk from jstest-gtk-gitAUR. Select the joystick you want to edit, click the Properties button. On this new window, click the Calibration button (do not click Start Calibration after that). You can then set the CenterMin and CenterMax values, which control the center deadzone, and RangeMin and RangeMax, which control the end of throw deadzones. Note that the calibration settings are applied when the application opens the device, so you need to restart your game or test application to see updated calibration settings.
+
+After you set the deadzones, you also can create an udev rule to make all changes permanent:
+
+First, grab the vendor id of your joystick (replace X with your joystick's number, it's usually 0):
+
+$ udevadm info -q property --property ID_VENDOR_ID --value /dev/input/jsX
+
+Also rab the model id:
+
+$ udevadm info -q property --property ID_MODEL_ID --value /dev/input/jsX
+
+If the commands above give you an empty output, it could be because your controller is connected via Bluetooth, making these unique attributes only visible on the parent device(s). To mitigate this, you could try finding other unique attributes by running:
+
+$ udevadm info -a /dev/input/jsX
+
+This will list all available attributes from your device (and parent devices). So, for example, if the parent device of your joystick has the attribute ATTRS{uniq}=="a0:b1:c2:d3:e4:f5", or maybe both ATTRS{idVendor}=="054c" and ATTRS{idProduct}=="09cc", then you can use these instead of ENV{ID_VENDOR_ID} and ENV{ID_MODEL_ID} in the udev rule below.
+
+You can also have both rules at the same time, just separate them with a new line.
+
+Anyway, now use jscal to dump the new calibration settings of your joystick:
+
+$ jscal -p /dev/input/jsX
+
+Now, modify this udev rule with the values you got:
+
+/etc/udev/rules.d/85-jscal-custom-calibration.rules
+
+SUBSYSTEM=="input", ENV{ID_VENDOR_ID}=="054c", ENV{ID_MODEL_ID}=="09cc", ACTION=="add", RUN+="/usr/bin/jscal -s 1,1,1,1 /dev/input/js%n"
+
+This rule will automatically run /usr/bin/jscal -s 1,1,1,1 /dev/input/js%n whenever you connect a joystick with vendor id 054c and model id 09cc. The /dev/input/js%n part is required to automatically determine the correct joystick, so do not remove it.
+
+Finally, load this new udev rule.
+evdev API deadzones
+
+The evdev-joystick tool from the linuxconsole package can be used to view and change deadzones and calibration for evdev API devices.
+
+To view your device configuration:
+
+$ evdev-joystick --showcal /dev/input/by-id/usb-*-event-joystick
+
+To change the deadzone for a particular axis, use a command like:
+
+$ evdev-joystick --evdev /dev/input/by-id/usb-*-event-joystick --axis 0 --deadzone 0
+
+To set the same deadzone for all axes at once, omit the --axis 0 option.
+
+Use udev rules file to set them automatically when the controller is connected.
+
+Note that inside the kernel, the value is called flatness and is set using the EVIOCSABS ioctl.
+
+Default configuration will look like similar to this:
+
+$ evdev-joystick --showcal /dev/input/by-id/usb-Madcatz_Saitek_Pro_Flight_X-55_Rhino_Stick_G0000090-event-joystick
+
+Supported Absolute axes:
+   Absolute axis 0x00 (0) (X Axis) (min: 0, max: 65535, flatness: 4095 (=6.25%), fuzz: 255)
+   Absolute axis 0x01 (1) (Y Axis) (min: 0, max: 65535, flatness: 4095 (=6.25%), fuzz: 255)
+   Absolute axis 0x05 (5) (Z Rate Axis) (min: 0, max: 4095, flatness: 255 (=6.23%), fuzz: 15)
+   Absolute axis 0x10 (16) (Hat zero, x axis) (min: -1, max: 1, flatness: 0 (=0.00%), fuzz: 0)
+   Absolute axis 0x11 (17) (Hat zero, y axis) (min: -1, max: 1, flatness: 0 (=0.00%), fuzz: 0)
+
+While a more reasonable setting would be achieved with something like this (repeat for other axes):
+
+$ evdev-joystick --evdev /dev/input/by-id/usb-Madcatz_Saitek_Pro_Flight_X-55_Rhino_Stick_G0000090-event-joystick --axis 0 --deadzone 512
+
+Event device file: /dev/input/by-id/usb-Madcatz_Saitek_Pro_Flight_X-55_Rhino_Stick_G0000090-event-joystick
+ Axis index to deal with: 0
+ New dead zone value: 512
+ Trying to set axis 0 deadzone to: 512
+   Absolute axis 0x00 (0) (X Axis) Setting deadzone value to : 512
+ (min: 0, max: 65535, flatness: 512 (=0.78%), fuzz: 255)
+
+Configuring curves and responsiveness
+
+In case your game requires just limited amount of buttons or has good support for multiple controllers, you may have good results with using xboxdrv to change response curves of the joystick.
+
+Below are example setups for Saitek X-55 HOTAS:
+
+$ xboxdrv --evdev /dev/input/by-id/usb-Madcatz_Saitek_Pro_Flight_X-55_Rhino_Throttle_G0000021-event-joystick \
+  --evdev-no-grab --evdev-absmap 'ABS_#40=x1,ABS_#41=y1,ABS_X=x2,ABS_Y=y2' --device-name 'Hat and throttle' \
+  --ui-axismap 'x2^cal:-32000:0:32000=,y2^cal:-32000:0:32000=' --silent
+
+this maps the EV_ABS event with id of 40 and 41 (use xboxdrv with --evdev-debug to see the events registered), which is the normally inaccessible "mouse pointer" on the throttle, to first gamepad joystick and throttles to second joystick, it also clamps the top and lower ranges as they not always register fully.
+
+A bit more interesting is the setup for the stick:
+
+$ xboxdrv --evdev /dev/input/by-id/usb-Madcatz_Saitek_Pro_Flight_X-55_Rhino_Stick_G0000090-event-joystick \
+  --evdev-no-grab --evdev-absmap 'ABS_X=x1' --evdev-absmap 'ABS_Y=y1' --device-name 'Joystick' \
+  --ui-axismap 'x1^cal:-32537:-455:32561=,x1^dead:-900:700:1=,x1^resp:-32768:-21845:-2000:0:2000:21485:32767=' \
+  --ui-axismap 'y1^cal:-32539:-177:32532=,y1^dead:-700:2500:1=,y1^resp:-32768:-21845:-2000:0:2000:21485:32767=' \
+  --evdev-absmap 'ABS_RZ=x2' --ui-axismap 'x2^cal:-32000:-100:32000,x2^dead:-1500:1000:1=,x2^resp:-32768:-21845:-2000:0:2000:21485:32767=' \
+  --silent
+
+this maps the 3 joystick axes to gamepad axes and changes the calibration (min value, centre value, max value), dead zones (negative side, positive side, flag to turn smoothing) and finally change of response curve to a more flat one in the middle.
+
+You can also modify the responsiveness by setting the 'sen' (sensitivity). Setting it to value of 0 will give you a linear sensitivity, value of -1 will give very insensitive axis while value of 1 will give very sensitive axis. You can use intermediate values to make it less or more sensitive. Internally xboxdrv uses a quadratic formula to calculate the resulting value, so this setting gives a more smooth result than 'resp' shown above.
+
+Nice thing about xboxdrv is that it exports resulting device as both old Joystick API and new style evdev API so it should be compatible with basically any application.
+Disable joystick from controlling mouse
+
+If you want to play games with your gamepad, you might want to disable its joystick control over mouse cursor. To do this, edit /etc/X11/xorg.conf.d/51-joystick.conf (create if it does not exists) so that it looks like this:
+
+/etc/X11/xorg.conf.d/51-joystick.conf 
+
+Section "InputClass"
+        Identifier "joystick catchall"
+        MatchIsJoystick "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "joystick"
+        Option "StartKeysEnabled" "False"
+        Option "StartMouseEnabled" "False"
+EndSection
+
+Using gamepad to send keystrokes
+
+A couple of programs exist to map gamepad buttons to keyboard keys, including:
+
+    qjoypadAUR
+    antimicroxAUR
+    sc-controllerAUR
+    steam - see Steam#Steam Input
+
+All work well without the need for additional X.org configuration.
+Xorg configuration example
+
+This is a good solution for systems where restarting Xorg is a rare event because it is a static configuration loaded only on X startup. The example runs on a Kodi media PC, controlled with a Logitech Cordless RumblePad 2. Due to a problem with the d-pad (a.k.a. "hat") being recognized as another axis, Joy2key was used as a workaround. Since kodi version 11.0 and joy2keyAUR 1.6.3-1, this setup no longer worked and the following was created for letting Xorg handle joystick events.
+
+First, install the xf86-input-joystickAUR package. Then, create an X configuration file:
+
+/etc/X11/xorg.conf.d/51-joystick.conf
+
+Section "InputClass"
+  Identifier "Joystick hat mapping"
+  Option "StartKeysEnabled" "True"
+  #MatchIsJoystick "on"
+  Option "MapAxis5" "keylow=113 keyhigh=114"
+  Option "MapAxis6" "keylow=111 keyhigh=116"
+ EndSection
+
+Note: The MatchIsJoystick "on" line does not seem to be required for the setup to work, but you may want to uncomment it.
+Remapping of gamepad buttons and more
+
+With some programs you can also configure your gamepad further, including the following potential features:
+
+    Remapping buttons and axes.
+        Assigning mapping profiles to different games.
+    Emulating a different type of gamepad. As noted in #Mimic Xbox 360 controller, software can often behave better when seemingly given an Xbox 360 Controller, as this is a very common controller that many games have been tested with.
+    Additional functionality such as Macros, On-Screen-Displays etc.
+
+List of software:
+
+    SC Controller — Open-source software supporting button remapping and Xbox 360 Controller emulation.
+
+    https://github.com/Ryochan7/sc-controller || sc-controllerAUR
+
+    Steam — Proprietary storefront whose client supports rebinding gamepad inputs via Steam Input. When enabled, Steam exposes a Steam Controller to games that opt into the Steam Input API, as well as an emulated Xbox 360 Controller to games using traditional gamepad APIs. See Steam#Steam Input for further details.
+
+    https://store.steampowered.com/about/ || steam
+
+    xboxdrv — Xbox 360 controller driver which supports emulating the controller from a different input controller. Even if you don't have or need (in the sense of #Mimic Xbox 360 controller) a 360 controller, this is still flexible option for performing remapping.
+
+    https://xboxdrv.gitlab.io/ || xboxdrvAUR
+
+Remapping of gamepad on SDL2 applications
+
+Gamepads can be remapped for SDL2 applications using the SDL_GAMECONTROLLERCONFIG environment variable. For each line, it includes the gamepad's GUID, a name, button / axis mappings and a platform. The controller's GUID can be retreived by installing sdl2-jstest-gitAUR and then running sdl2-jstest --list.
+
+For example, to map Microsoft Xbox 360 controllers with different GUIDs:
+
+~/.bashrc
+
+export SDL_GAMECONTROLLERCONFIG="
+030000005e0400008e02000001000000,Microsoft Xbox 360,a:b0,b:b1,back:b6,dpdown:h0.1,dpleft:h0.2,dpright:h0.8,dpup:h0.4,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,platform:Linux,
+030000005e0400008e02000004010000,Microsoft Xbox 360,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,platform:Linux,
+"
+
+Some apps extract mapping information from a gamecontrollerdb.txt file. It can be edited graphically with controllermapAUR. An up to date database can be found on [1].
+Specific devices
+
+While most gamepads, especially USB based ones should just work, some may require (or give better results) if you use alternative drivers. If it does not work the first time, do not give up, and read the following sections thoroughly!
+Dance pads
+
+Most dance pads should work. However some pads, especially those used from a video game console via an adapter, have a tendency to map the directional buttons as axis buttons. This prevents hitting left-right or up-down simultaneously. This behavior can be fixed for devices recognized by xpad via a module option:
+
+# modprobe -r xpad
+# modprobe xpad dpad_to_buttons=1
+
+If that did not work, you can try axisfix-gitAUR or patching the joydev kernel module (https://github.com/adiel-mittmann/dancepad).
+Logitech Thunderpad Digital
+
+Logitech Thunderpad Digital will not show all the buttons if you use the analog module. Use the device specific adi module for this controller.
+Nintendo Gamecube Controller
+
+Dolphin Emulator has a page on their wiki that explains how to use the official Nintendo USB adapter with a Gamecube controller. This configuration also works with the Mayflash Controller Adapter if the switch is set to "Wii U".
+Nintendo Switch Pro Controller and Joy-Cons
+Using the kernel Nintendo HID driver
+
+The hid-nintendo kernel HID driver was mainlined in kernel 5.16. If you are using an earlier kernel, you will need to install the DKMS module named hid-nintendo-dkmsAUR. The driver provides support for rumble, battery level, and control of the player and home LEDs. It supports the Nintendo Switch Pro Controller over both USB and Bluetooth in addition to the Joy-Cons.
+
+An alternate DKMS module named hid-nintendo-nso-dkmsAUR patches in support for the Switch Online NES and SNES controllers.
+Using joycond userspace daemon
+
+The hid-nintendo kernel driver does not handle the combination of two Joy-Cons into one virtual input device. That functionality has been left up to userspace. joycond-gitAUR is a userspace daemon that combines two kernel Joy-Con evdev devices into one virtual input device using uinput. An application can use two Joy-Cons as if they are a single controller. When the daemon is active, Switch controllers will be placed in a pseudo pairing mode, and the LEDs will start flashing. Holding the triggers can be used to pair controllers and make them usable. To pair two Joy-Cons together, press one trigger on each Joy-Con.
+Using hid-nintendo Pro Controller with Steam games (without joycond)
+
+The hid-nintendo driver currently conflicts with Steam using hidraw to implement its own Pro Controller driver. If you wish to use the Steam implementation, the hid-nintendo driver can be blacklisted. Alternatively if you want to use hid-nintendo with a Steam game directly, Steam can be started without access to hidraw using firejail:
+
+$ firejail --noprofile --blacklist=/sys/class/hidraw/ steam
+
+An issue has been opened on the steam-for-linux GitHub repo.
+Using hid-nintendo Pro Controller with Steam games (with joycond)
+
+A workaround has been added to joycond to have udev rules to block Steam from accessing hidraw for the Pro Controller.
+
+That alone is not enough though, since Steam will not recognize the Pro Controller when access to hidraw is blocked. To get around that issue, joycond supports creating a virtual Pro Controller with a different product ID. Steam will view this as a typical controller. This gives the best of both worlds, where hid-nintendo can be used both inside and outside of Steam simultaneously.
+
+To pair the Pro Controller in virtual mode, press the Plus and Minus buttons simultaneously (instead of using the triggers). You must be using a version of joycond including this commit.
+Mimic Xbox 360 controller
+
+Some games and emulators are hardcoded to work with an Xbox 360 controller, and will not work with other controllers. To get around this, you need to create a virtual Xbox 360 controller that emulates the expected interface, but is bound to your controller's inputs. This can be done with Steam Input or xboxdrv.
+Use positional layout on SDL2 applications
+
+By default, SDL2 maps buttons on Nintendo controllers according to the gamepad's label instead of the button's position. This is enabled by the SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS setting, which defaults to 1 for controllers known to use the Nintendo button layout,[2] and 0 for other controllers.[3] This behavior can be overridden for all controllers by setting the SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS environment variable. For example, if Nintendo's conception of A/B and X/Y is undesirable, set SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS=0.
+iPEGA-9017s and other Bluetooth gamepads
+
+If you want to use one of the widely available Bluetooth gamepads, such as iPEGA-9017s designed mostly for Android and iOS devices you would need xboxdrvAUR, bluez, bluez-plugins, and bluez-utils. You should connect it in gamepad mode (if there are different modes, choose the gamepad one). Technically it is ready to be used, but in most cases games would not recognize it, and you would have to map it individually for all application. The best way to simplify it and make it work with all applications is to mimic Microsoft X360 controller with xboxdrvAUR. Once connected you can create a udev rule to give it a persistent name, that would come in handy when setting it up.
+
+/etc/udev/rules.d/99-btjoy.rules
+
+#Create a symlink to appropriate /dev/input/eventX at /dev/btjoy
+ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Bluetooth Gamepad", ATTRS{uniq}=="00:17:02:01:ae:2a", SYMLINK+="btjoy"
+
+Replace "Bluetooth Gamepad" with your device name and "00:17:02:01:ae:2a" with your device's address.
+
+Next, create a configuration for xboxdrvAUR somewhere, for example:
+
+~/.config/xboxdrv/ipega.conf
+
+#iPEGA PG-9017S Config 
+
+[xboxdrv]
+evdev-debug = true
+evdev-grab = true
+rumble = false
+mimic-xpad = true
+
+[evdev-absmap]
+ABS_HAT0X = dpad_x
+ABS_HAT0Y = dpad_y
+
+ABS_X = X1
+ABS_Y = Y1
+
+ABS_Z  = X2
+ABS_RZ = Y2
+
+[axismap]
+-Y1 = Y1
+-Y2 = Y2
+
+[evdev-keymap]
+BTN_EAST=a
+BTN_C=b
+BTN_NORTH=y
+BTN_SOUTH=x
+BTN_TR2=start
+BTN_TL2=back
+BTN_Z=rt
+BTN_WEST=lt
+
+BTN_MODE = guide
+
+Refer to xboxdrv(1) to see all the options.
+
+Now when you have the configuration and your device is connected you can start the xboxdrvAUR like so:
+
+# xboxdrv --evdev /dev/btjoy --config .config/xboxdrv/ipega.conf
+
+Your games will now work with bluetooth gamepad as long as xboxdrv is running.
+iPEGA-9068 and 9087
+
+For this model, use the same procedures as above, but with the configs:
+
+~/.config/xboxdrv/ipega.conf
+
+#iPEGA PG-9068 and PG-9087 Config 
+
+[xboxdrv]
+evdev-debug = true
+evdev-grab = true
+rumble = false
+mimic-xpad = true
+
+[evdev-absmap]
+ABS_HAT0X = dpad_x
+ABS_HAT0Y = dpad_y
+
+ABS_X = X1
+ABS_Y = Y1
+
+ABS_Z  = X2
+ABS_RZ = Y2
+
+[axismap]
+-Y1 = Y1
+-Y2 = Y2
+
+[evdev-keymap]
+BTN_A=a
+BTN_B=b
+BTN_Y=y
+BTN_X=x
+BTN_TR=rb
+BTN_TL=lb
+BTN_TR2=rt
+BTN_TL2=lt
+BTN_THUMBL=tl
+BTN_THUMBR=tr
+BTN_START=start
+BTN_SELECT=back
+
+BTN_MODE = guide
+
+Defender X7
+
+For this model, use the same procedures as above, but with the configs:
+
+~/.config/xboxdrv/defender.conf
+
+#Defender x7 xboxdrv config
+
+[xboxdrv]
+evdev-debug = true
+evdev-grab = true
+rumble = false
+mimic-xpad = true
+
+[evdev-absmap]
+ABS_HAT0X = dpad_x
+ABS_HAT0Y = dpad_y
+
+ABS_X = X1
+ABS_Y = Y1
+
+ABS_Z  = X2
+ABS_RZ = Y2
+
+[axismap]
+-Y1 = Y1
+-Y2 = Y2
+
+[evdev-keymap]
+BTN_EAST=b
+BTN_NORTH=x
+BTN_SOUTH=a
+BTN_WEST=y
+BTN_TR2=rt
+BTN_TL2=lt
+BTN_TR=rb
+BTN_TL=lb
+BTN_THUMBL=tl
+BTN_THUMBR=tr
+BTN_START=start
+BTN_SELECT=back
+
+BTN_MODE = guide
+
+Now when you have the configuration and your device is connected you can start the xboxdrvAUR like so:
+
+# xboxdrv --evdev /dev/btjoy --config .config/xboxdrv/defender.conf
+
+Stadia Controller
+
+The Stadia controller can also be mapped with xboxdrv:
+
+~/.config/xboxdrv/stadia.conf
+
+# Stadia xboxdrv config
+
+[xboxdrv]
+mimic-xpad=true
+silent=true
+
+[evdev-absmap]
+ABS_X=x1
+ABS_Y=y1
+ABS_Z=x2
+ABS_RZ=y2
+ABS_GAS=rt
+ABS_BRAKE=lt
+ABS_HAT0X=dpad_x
+ABS_HAT0Y=dpad_y
+
+[axismap]
+-y1=y1
+-y2=y2
+
+[evdev-keymap]
+BTN_SOUTH=A
+BTN_EAST=B
+BTN_NORTH=X
+BTN_WEST=Y
+
+BTN_START=start
+BTN_SELECT=back
+BTN_MODE=guide
+
+BTN_THUMBL=tl
+BTN_THUMBR=tr
+BTN_TR=rb
+BTN_TL=lb
+
+Steam Controller
+Note: Kernel 4.18 provides a kernel driver for wired/wireless use of the steam controller as a controller input device without Steam.
+
+The Steam client will recognize the controller and provide keyboard/mouse/gamepad emulation while Steam is running. The in-game Steam overlay needs to be enabled and working in order for gamepad emulation to work. You may need to run udevadm trigger with root privileges or plug the dongle out and in again, if the controller does not work immediately after installing and running Steam. If all else fails, try restarting the computer while the dongle is plugged in.
+
+If you are using the controller connected via Bluetooth LE, make sure the user is part of the input group.
+
+If you cannot get the Steam Controller to work, see #Steam Controller not pairing.
+
+Alternatively you can install python-steamcontroller-gitAUR to have controller and mouse emulation without Steam or sc-controllerAUR for a versatile graphical configuration tool simillar to what is provided by the Steam client.
+Note: If you do not use the Steam runtime, you might actually need to disable the overlay for the controller to work in certain games (Rocket Wars, Rocket League, Binding of Isaac, etc.). Right click on a game in your library, select "Properties", and uncheck "Enable Steam Overlay".
+Wine
+
+python-steamcontroller-gitAUR can also be used to make the Steam Controller work for games running under Wine. You need to find and download the application xbox360cemu.v.3.0 (e.g. from here). Then copy the files dinput8.dll, xbox360cemu.ini, xinput1_3.dll and xinput_9_1_0.dll to the directory that contains your game executable. Edit xbox360cemu.ini and only change the following values under [PAD1] to remap the Steam Controller correctly to a XBox controller.
+
+xbox360cemu.ini
+
+Right Analog X=4
+Right Analog Y=-5
+A=1
+B=2
+X=3
+Y=4
+Back=7
+Start=8
+Left Thumb=10
+Right Thumb=11
+Left Trigger=a3
+Right Trigger=a6
+
+Now start python-steamcontroller in Xbox360 mode (sc-xbox.py start). You might also want to copy XInputTest.exe from xbox360cemu.v.3.0 to the same directory and run it with Wine in order to test if the mappings work correctly. However neither mouse nor keyboard emulation work with this method.
+
+Alternatively you can use sc-controllerAUR for a similar graphical setup as Steam's own configurator. As of writing, it is a bit buggy here and there but offers an easy click and go way of configuring the controller.
+Xbox 360 controller
+
+Both the wired and wireless (with the Xbox 360 Wireless Receiver for Windows) controllers are supported by the xpad kernel module and should work without additional packages. Note that using a wireless Xbox360 controller with the Play&Charge USB cable will not work. The cable is for recharging only and does not transmit any input data over the wire.
+
+It has been reported that the default xpad driver has some issues with a few newer wired and wireless controllers, such as:
+
+    incorrect button mapping. (discussion in Steam bugtracker)
+    not-working sync. (discussion in Arch Forum)
+    all four LEDs keep blinking, but controller works. TLP's USB autosuspend is one sure cause of this issue with wireless controllers. See below for fix.
+
+If you use the TLP power management tool, you may experience connection issues with your Microsoft wireless adapter (e.g. the indicator LED will go out after the adapter has been connected for a few seconds, and controller connection attempts fail, four LEDs keep blinking but controller works). This is due to TLP's USB autosuspend functionality, and the solution is to add the Microsoft wireless adapter's device ID to TLP blacklist (to check device ID to blacklist, run tlp-stat -u; for original MS wireless dongle just add USB_DENYLIST="045e:0719" to /etc/tlp.conf), check TLP configuration for more details.
+
+If you experience such issues, you can use #xboxdrv as the default xpad driver instead.
+
+If you wish to use the controller for controlling the mouse, or mapping buttons to keys, etc. you should use the xf86-input-joystickAUR package (configuration help can be found using joystick(4)). If the mouse locks itself in a corner, it might help changing the MatchDevicePath in /etc/X11/xorg.conf.d/50-joystick.conf from /dev/input/event* to /dev/input/js*.
+
+In order to connect via Bluetooth using KDE, add the following kernel parameter bluetooth.disable_ertm=1.
+
+If you experience problems with the rumble feature not working in games, it may be necessary to set the environment variable SDL_JOYSTICK_HIDAPI=0
+xboxdrv
+
+xboxdrv is an alternative to xpad which provides more functionality and might work better with certain controllers. It works in userspace and can be launched as system service.
+
+Install it with the xboxdrvAUR package. Then start/enable xboxdrv.service.
+
+If you have issues with the controller being recognized but not working in steam games or working but with incorrect mappings, it may be required to modify you configuration as such:
+
+/etc/default/xboxdrv
+
+[xboxdrv]
+silent = true
+device-name = "Xbox 360 Wireless Receiver"
+mimic-xpad = true
+deadzone = 4000
+
+[xboxdrv-daemon]
+dbus = disabled
+
+Then restart xboxdrv.service.
+Multiple controllers
+
+xboxdrv supports a multitude of controllers, but they need to be set up in /etc/default/xboxdrv. For each extra controller, add an next-controller = true line. For example, when using 4 controllers, add it 3 times:
+
+[xboxdrv]
+silent = true
+next-controller = true
+next-controller = true
+next-controller = true
+[xboxdrv-daemon]
+dbus = disabled
+
+Then restart xboxdrv.service.
+Mimic Xbox 360 controller with other controllers
+
+xboxdrv can be used to make any controller register as an Xbox 360 controller with the --mimic-xpad switch. This may be desirable for games that support Xbox 360 controllers out of the box, but have trouble detecting or working with other gamepads.
+
+First, you need to find out what each button and axis on the controller is called. You can use evtest for this. Run evtest and select the device event ID number (/dev/input/event*) that corresponds to your controller. Press the buttons on the controller and move the axes to read the names of each button and axis.
+
+Here is an example of the output:
+
+Event: time 1380985017.964843, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90003
+Event: time 1380985017.964843, type 1 (EV_KEY), code 290 (BTN_THUMB2), value 1
+Event: time 1380985017.964843, -------------- SYN_REPORT ------------
+Event: time 1380985018.076843, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90003
+Event: time 1380985018.076843, type 1 (EV_KEY), code 290 (BTN_THUMB2), value 0
+Event: time 1380985018.076843, -------------- SYN_REPORT ------------
+Event: time 1380985018.460841, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90002
+Event: time 1380985018.460841, type 1 (EV_KEY), code 289 (BTN_THUMB), value 1
+Event: time 1380985018.460841, -------------- SYN_REPORT ------------
+Event: time 1380985018.572835, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90002
+Event: time 1380985018.572835, type 1 (EV_KEY), code 289 (BTN_THUMB), value 0
+Event: time 1380985018.572835, -------------- SYN_REPORT ------------
+Event: time 1380985019.980824, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90006
+Event: time 1380985019.980824, type 1 (EV_KEY), code 293 (BTN_PINKIE), value 1
+Event: time 1380985019.980824, -------------- SYN_REPORT ------------
+Event: time 1380985020.092835, type 4 (EV_MSC), code 4 (MSC_SCAN), value 90006
+Event: time 1380985020.092835, type 1 (EV_KEY), code 293 (BTN_PINKIE), value 0
+Event: time 1380985020.092835, -------------- SYN_REPORT ------------
+Event: time 1380985023.596806, type 3 (EV_ABS), code 3 (ABS_RX), value 18
+Event: time 1380985023.596806, -------------- SYN_REPORT ------------
+Event: time 1380985023.612811, type 3 (EV_ABS), code 3 (ABS_RX), value 0
+Event: time 1380985023.612811, -------------- SYN_REPORT ------------
+Event: time 1380985023.708768, type 3 (EV_ABS), code 3 (ABS_RX), value 14
+Event: time 1380985023.708768, -------------- SYN_REPORT ------------
+Event: time 1380985023.724772, type 3 (EV_ABS), code 3 (ABS_RX), value 128
+Event: time 1380985023.724772, -------------- SYN_REPORT ------------
+
+In this case, BTN_THUMB, BTN_THUMB2 and BTN_PINKIE are buttons and ABS_RX is the X axis of the right analogue stick. You can now mimic an Xbox 360 controller with the following command:
+
+$ xboxdrv --evdev /dev/input/event* --evdev-absmap ABS_RX=X2 --evdev-keymap BTN_THUMB2=a,BTN_THUMB=b,BTN_PINKIE=rt --mimic-xpad
+
+The above example is incomplete. It only maps one axis and 3 buttons for demonstration purposes. Use xboxdrv --help-button to see the names of the Xbox controller buttons and axes and bind them accordingly by expanding the command above. Axes mappings should go after --evdev-absmap and button mappings follow --evdev-keymap (comma separated list; no spaces).
+
+By default, xboxdrv outputs all events to the terminal. You can use this to test that the mappings are correct. Append the --silent option to keep it quiet.
+Using generic/clone controllers
+
+Some clone gamepads might require a specific initialization sequence in order to work (Super User answer). For that you should run the following python script as the root user:
+
+#!/usr/bin/env python3
+
+import usb.core
+
+dev = usb.core.find(idVendor=0x045e, idProduct=0x028e)
+
+if dev is None:
+    raise ValueError('Device not found')
+else:
+    dev.ctrl_transfer(0xc1, 0x01, 0x0100, 0x00, 0x14)
+
+Xbox Wireless Controller / Xbox One Wireless Controller
+Connect Xbox Wireless Controller with USB cable
+
+This is supported by the kernel and works any without additional packages.
+Connect Xbox Wireless Controller with Bluetooth
+Update controller firmware via Windows 10
+
+The firmware of the Xbox Wireless Controller used to cause loops of connecting/disconnecting with Bluez. The best workaround is to plug the controller (via a USB cord) to a Windows 10 computer, download the Xbox Accessories application through the Microsoft Store, and update the firmware of the controller.
+xpadneo
+
+A relatively new driver which does support the Xbox One S and Xbox Series X|S controller via Bluetooth is called xpadneo. In addition to these two models, it has also basic support for the Xbox Elite Series 2 Wireless controller. In exchange for fully supporting just two controllers so far, it enables one to read out the correct battery level, supports rumble (even the one on the trigger buttons - L2/R2), corrects the (sometimes wrong) button mapping and more.
+
+Installation is done using DKMS: xpadneo-dkms-gitAUR.
+Note: Pairing a new Xbox One S controller for the first time may prove difficult, from not pairing at all to entering a connect/disconnect loop. These problems are described there. The best way to reliably pair the controller is to first pair it in Windows 10. However, this needs be done using the same Bluetooth adapter. A solution is to install a free copy of Windows 10 Evaluation on a Virtual machine (using QEMU or VirtualBox, taking care of the Bluetooth adapter passthrough requirements, e.g. as an USB device) using Arch Linux as your host, and pair in Windows 10 first, then do the same again under your Arch Linux system. Then pairing will succeed and there will be no need of further Windows 10 use.
+Connect Xbox Wireless Controller with Microsoft Xbox Wireless Adapter
+xone
+
+xone is a Linux kernel driver for Xbox One and Xbox Series X|S accessories. It serves as a modern replacement for xpad, supersedes xow. Currently working via wired or with the wireless dongle. This driver is still in active development.
+
+Install xone-dkmsAUR and, if using the wireless dongle, xone-dongle-firmwareAUR. Reboot your system.
+
+If the controller performs poorly (low polling rate) after being paired, you will need to update the controller's firmware in Windows using the "Xbox Accessories" app from the Microsoft Store. Theoretically this should be possible with USB passthrough to a Windows virtual machine, but you may need to dual boot to an actual (baremetal) Windows installation for the Xbox Accessories application to see the controller and do the firmware update.
+
+Also, if you dual boot Windows, pairing the controller & adapter in Windows may cause the pairing to be lost in Linux. You will need to re-pair the controller & dongle when you reboot into Linux. This also happens in the other direction — when the controller & dongle are paired in Linux, they will need to be re-paired the next time you want to use them in Windows.
+xow
+
+xow is a project that allows connection with a wireless dongle. It is currently in very early stages of development. It can be installed via xow-gitAUR
+
+xone (made by the same developer) supersedes xow; using xone instead of xow is "highly recommended."
+Logitech Dual Action
+
+The Logitech Dual Action gamepad has a very similar mapping to the PS2 pad, but some buttons and triggers need to be swapped to mimic the Xbox controller.
+
+# xboxdrv --evdev /dev/input/event* \
+   --evdev-absmap ABS_X=x1,ABS_Y=y1,ABS_RZ=x2,ABS_Z=y2,ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y \
+   --axismap -Y1=Y1,-Y2=Y2 \
+   --evdev-keymap BTN_TRIGGER=x,BTN_TOP=y,BTN_THUMB=a,BTN_THUMB2=b,BTN_BASE3=back,BTN_BASE4=start,BTN_BASE=lt,BTN_BASE2=rt,BTN_TOP2=lb,BTN_PINKIE=rb,BTN_BASE5=tl,BTN_BASE6=tr \
+   --mimic-xpad --silent
+
+PlayStation 2 controller via USB adapter
+
+To fix the button mapping of PS2 dual adapters and mimic the Xbox controller you can run the following command:
+
+# xboxdrv --evdev /dev/input/event* \
+   --evdev-absmap ABS_X=x1,ABS_Y=y1,ABS_RZ=x2,ABS_Z=y2,ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y \
+   --axismap -Y1=Y1,-Y2=Y2 \
+   --evdev-keymap   BTN_TOP=x,BTN_TRIGGER=y,BTN_THUMB2=a,BTN_THUMB=b,BTN_BASE3=back,BTN_BASE4=start,BTN_BASE=lb,BTN_BASE2=rb,BTN_TOP2=lt,BTN_PINKIE=rt,BTN_BASE5=tl,BTN_BASE6=tr \
+   --mimic-xpad --silent
+
+PlayStation 3 controller
+Pairing via USB
+
+If you own a PS3 controller and can connect with USB, plug it to your computer and press the PS button. The controller will power up and one of the four LEDs should light up indicating the controller's number.
+Pairing via Bluetooth
+
+Install bluez bluez-utils bluez-plugins. Make sure bluetooth is working by following the first five steps of Bluetooth#Pairing and leave the bluetoothctl command running, then turn on the controller by pressing the middle 'PS' button(all 4 leds should be blinking quickly ~4 hz) and connect to your computer using usb. Lastly, type yes in the bluetoothctl prompt when asked 'Authorize service 00001124-0000-1000-8000-00805f9b34fb (yes/no)'.
+
+Alternative instructions: To connect your PS3 controller to your computer using Bluetooth, you first need to install bluez and bluez-plugins then connect your controller via USB. A pop-up should appear asking for pairing. Click on Trust & Authorize. You can now unplug your controller and press the PS button. The controller will connect and a LED will remain solid. You can now use it to play games. Connecting using the USB cable is only needed after the controller has been connected to another system.
+Tip: There are many complicated instructions on the internet on setting up a PS3 controller that require many steps such as compiling and installing qtsixa or sixpair and setting up the controller manually, or patching bluez with some specific patches. None of this is necessary on a modern Linux kernel and after installing bluez-plugins.
+PlayStation 3/4 controller
+
+The DualShock 3, DualShock 4 and Sixaxis controllers work out of the box when plugged in via USB (the PS button will need to be pushed to begin). They can also be used wirelessly via Bluetooth.
+
+Steam properly recognizes it as a PS3 pad and Big Picture can be launched with the PS button. Big Picture and some games may act as if it was a 360 controller. Gamepad control over mouse is on by default. You may want to turn it off before playing games, see #Joystick moving mouse.
+Pairing via Bluetooth
+
+Install the bluez, bluez-plugins, and bluez-utils packages, which includes the sixaxis plugin. Then start the bluetooth service and ensure bluetooth is powered on. If using bluetoothctl start it in a terminal and then plug the controller in via USB. You should be prompted to trust the controller in bluetoothctl. A graphical bluetooth front-end may program your PC's bluetooth address into the controller automatically. Hit the PlayStation button and check that the controller works while plugged in.
+
+You can now disconnect your controller. The next time you hit the PlayStation button it will connect without asking anything else.
+
+Alternatively, on a PS4 controller you can hold the share button and the PlayStation button simultaneously (for a few seconds) to put the gamepad in pairing mode, and pair as you would normally.
+
+GNOME's Settings also provides a graphical interface to pair sixaxis controllers when connected by wire.
+
+Remember to disconnect the controller when you are done as the controller will stay on when connected and drain the battery.
+Note: If the controller does not connect, make sure the bluetooth interface is turned on and the controllers have been trusted. (See Bluetooth)
+Using generic/clone controllers
+
+Using generic/clone Dualshock controllers is possible, however there is an issue that may require to install a patched package. The default Bluetooth protocol stack does not detect some of the clone controllers. The bluez-ps3AUR package is a version patched to be able to detect them. bluez-plugins-ps3AUR is another package that only patch the bluez-plugins may work for some controllers.
+PlayStation 4 controller
+Pairing via USB
+
+Connect your controller via USB and press the PS button.
+Pairing via Bluetooth
+
+If you want to use bluetooth mode, hold down the PS button and Share button together. The white LED of the controller should blink very quickly, and the wireless controller can be paired with your bluetooth manager (bluez, gnome-bluetooth).
+Disable touchpad acting as mouse
+
+This fixes conflicts with games that actually use touchpad as part of the gamepad, such as Rise of the Tomb Raider. This will work with both DualShock4 and DualSense controllers.
+X11
+
+Define the touchpad as ignored in the X configuration file:
+
+/etc/X11/xorg.conf.d/30-ds-disable-mouse.conf
+
+Section "InputClass"
+       Identifier   "ds-touchpad"
+       Driver       "libinput"
+       MatchProduct "Wireless Controller Touchpad"
+       Option       "Ignore" "True"
+EndSection
+
+Then, restart X11.
+Wayland
+
+We need to tell libinput to ignore the touchpad as an input device, so we will add a udev rule to add the LIBINPUT_IGNORE_DEVICE environment variable to the touchpad when connected. This could also work for X11 instead of the above.
+
+/etc/udev/rules.d/99-libinput-ignore.rules
+
+# DS4/DualSense Controller Touchpad
+ACTION=="add|change", ATTRS{name}=="Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+
+The rules file should be noticed automatically by udev, you might just need to reconnect your controller.
+Playstation 5 (Dualsense) controller
+
+Configure button mapping (thanks to yoyossef):
+
+# xboxdrv \
+  --evdev /dev/input/by-id/usb-Sony_Interactive_Entertainment_Wireless_Controller-if03-event-joystick \
+  --evdev-absmap ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y,ABS_X=X1,ABS_Y=Y1,ABS_RX=X2,ABS_RY=Y2,ABS_Z=LT,ABS_RZ=RT \
+  --evdev-keymap BTN_SOUTH=A,BTN_EAST=B,BTN_NORTH=Y,BTN_WEST=X,BTN_START=start,BTN_MODE=guide,BTN_SELECT=back \
+  --evdev-keymap BTN_TL=LB,BTN_TR=RB,BTN_TL2=LT,BTN_TR2=RT,BTN_THUMBL=TL,BTN_THUMBR=TR \
+  --axismap -y1=y1,-y2=y2                          \
+  --mimic-xpad                                     \
+  --silent
+
+Some applications, for example, Steam inside Geforce NOW inside web browser, may be confused with original joystick events, which shadow the newly created event source. Simply deleting /dev/input/js0 works this around.
+
+The PlayStation and mode buttons still do not work, however.
+dualsensectl
+
+dualsensectl is a tool that can toggle the lightbar and microphone (and its LED), monitor the battery status, and power off the controller. To use it, install dualsensectl-gitAUR.
+Tips and Tricks
+Gamepad over network
+
+If you want to use your gamepad with another computer over a network, you can use USB/IP or netstick-gitAUR to do this.
+Troubleshooting
+Device permissions
+
+Gamepad devices are affected by udev rules: unless they grant access to the device, it simply will not be readable by users. This section investigates the possibility of you already having a configuration file handling this.
+
+Any gamepad device, regardless of whether it is over USB or Bluetooth, is handled by the "input" subsystem of the kernel, corresponding with /dev/input. It's also common for udev rules to target the "hidraw" kernel module. Combining these, we can understand udev's handling of these devices by inspecting the configuration shipped by packages:
+
+$ grep --extended-regexp 'SUBSYSTEM=="input"|KERNEL=="hidraw' --recursive /usr/lib/udev/rules.d
+
+Some examples of applications which ship noteworthy rules:
+
+    systemd's default rules set the group of all input devices to input, and the mode of joystick devices to 664 [4].
+    Steam ships udev rules allowing access to a variety of controllers. See this Steam discussion for further info about the contents of the rules.
+    Dolphin emulator ships udev rules allowing access to controllers it supports.
+
+If your system does not already happen to have a udev rule for the device you want to use, you can either write one yourself or install the game-devices-udevAUR package and restart your computer.
+Note: It is possible to add a user to the input group in order to give them access to all devices. However, this is not recommended [5].
+Joystick moving mouse
+
+Sometimes USB gamepad can be recognized as HID mouse (only in X, it is still being installed as /dev/input/js0 as well). Known issue is cursor being moved by the joystick, or escaping to en edge of a screen right after plugin. If your application can detect gamepad by itself, you can remove the xf86-input-joystickAUR package.
+
+A more gentle solution is described in #Disable joystick from controlling mouse.
+Gamepad is not working in FNA/SDL based games
+
+If you are using a generic non-widely used gamepad you may encounter issues getting the gamepad recognized in games based on SDL. Since 14 May 2015, FNA supports dropping a gamecontrollerdb.txt into the executable folder of the game, for example the SDL_GameControllerDB.
+
+As an alternative and for older versions of FNA or for SDL you can generate a mapping yourself by downloading the SDL source code via https://libsdl.org/, navigating to /test/, compile the controllermap.c program (alternatively install controllermapAUR) and run the test. After completing the controllermap test, a GUID will be generated that you can put in the SDL_GAMECONTROLLERCONFIG environment variable which will then be picked up by SDL/FNA games. For example:
+
+$ export SDL_GAMECONTROLLERCONFIG="030000008f0e00000300000010010000,GreenAsia Inc. USB Joystick ,platform:Linux,x:b3,a:b2,b:b1,y:b0,back:b8,start:b9,dpleft:h0.8,dpdown:h0.0,dpdown:h0.4,dpright:h0.0,dpright:h0.2,dpup:h0.0,dpup:h0.1,leftshoulder:h0.0,leftshoulder:b6,lefttrigger:b4,rightshoulder:b7,righttrigger:b5,leftstick:b10,rightstick:b11,leftx:a0,lefty:a1,rightx:a3,righty:a2,"
+
+Gamepad is not recognized by all programs
+
+Some software, Steam for example, will only recognize the first gamepad it encounters. Due to a bug in the driver for Microsoft wireless periphery devices this can in fact be the bluetooth dongle. If you find you have a /dev/input/js* and /dev/input/event* belonging to you keyboard's bluetooth transceiver you can get automatically get rid of it by creating according udev rules:
+
+/etc/udev/rules.d/99-btcleanup.rules
+
+ACTION=="add", KERNEL=="js[0-9]*", SUBSYSTEM=="input", KERNELS=="...", ATTRS{bInterfaceSubClass}=="00", ATTRS{bInterfaceProtocol}=="00", ATTRS{bInterfaceNumber}=="02", RUN+="/usr/bin/rm /dev/input/js%n"
+ACTION=="add", KERNEL=="event*", SUBSYSTEM=="input", KERNELS=="...", ATTRS{bInterfaceSubClass}=="00", ATTRS{bInterfaceProtocol}=="00", ATTRS{bInterfaceNumber}=="02", RUN+="/usr/bin/rm /dev/input/event%n"
+
+Correct the KERNELS=="..." to match your device. The correct value can be found by running
+
+# udevadm info -an /dev/input/js0
+
+Assuming the device in question is /dev/input/js0. After you placed the rule reload the rules with
+
+# udevadm control --reload
+
+Then replug the device making you trouble. The joystick and event devices should be gone, although their number will still be reserved. But the files are out of the way.
+Vibration does not work in certain Windows games
+
+Some Windows games look for an Xbox 360 controller in particular, causing vibration to not work even with otherwise functional XInput gamepads. One example of such game is Inside.
+
+As a work-around for these games:
+
+    Unload the xpad kernel module.
+    Launch xboxdrv, including Xbox 360 mimicking gamepad and with vibration support:
+
+# xboxdrv --mimic-xpad --force-feedback
+
+Steam Controller
+Steam Controller not pairing
+
+There are some unknown cases where the packaged udev rule for the Steam controller does not work (FS#47330). The most reliable workaround is to make the controller world readable. Copy the rule /usr/lib/udev/rules.d/70-steam-controller.rules to /etc/udev/rules.d with a later prioritiy and change anything that says MODE="0660" to MODE="0666" e.g.
+
+/etc/udev/rules.d/99-steam-controller-perms.rules
+
+...
+SUBSYSTEM=="usb", ATTRS{idVendor}=="28de", MODE="0666"
+...
+
+You may have to reboot in order for the change to take effect.
+Steam Controller makes a game crash or not recognized
+
+If your Steam Controller is working well in Steam Big Picture mode, but not recognized by a game or the game starts crashing when you plug in the controller, this may be because of the native driver that has been added to the Linux kernel 4.18. Try to unload it, restart Steam and replug the controller.
+
+The module name of the driver is hid_steam, so to unload it you may perform:
+
+# rmmod hid_steam
+
+Xbox One Wireless Gamepad detected but no inputs recognized
+
+This can occur when using a third party Xbox One controller with the xpad or #xboxdrv drivers. Try switching to #xpadneo.
+Playstation 4 controllers
+Controller not recognized when using Bluetooth
+
+Install the ds4drvAUR package and run it with the hidraw (ds4drv --hidraw) backend parameter.
+Button mapping
+
+To fix the button mapping of PS4 controller you can use the following command with xboxdrv (or try with the ds4drv program, ds4drvAUR):
+
+# xboxdrv \
+   --evdev /dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick\
+   --evdev-absmap ABS_X=x1,ABS_Y=y1                 \
+   --evdev-absmap ABS_Z=x2,ABS_RZ=y2                \
+   --evdev-absmap ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y \
+   --evdev-keymap BTN_A=x,BTN_B=a                   \
+   --evdev-keymap BTN_C=b,BTN_X=y                   \
+   --evdev-keymap BTN_Y=lb,BTN_Z=rb                 \
+   --evdev-keymap BTN_TL=lt,BTN_TR=rt               \
+   --evdev-keymap BTN_SELECT=tl,BTN_START=tr        \
+   --evdev-keymap BTN_TL2=back,BTN_TR2=start        \
+   --evdev-keymap BTN_MODE=guide                    \
+   --axismap -y1=y1,-y2=y2                          \
+   --mimic-xpad                                     \
+   --silent
+
+Fix Motion control conflict (gamepad will not work on some applications)
+
+Dualshock 4 V1 and V2 are both like 3 devices, touchpad, motion control, and joypad.
+
+With some software like Parsec and Shadow cloud gaming streaming applications, motion control is in conflict with joypad, you can disable touchpad and motion control by adding the following udev rule:
+
+/etc/udev/rules.d/51-disable-DS3-and-DS4-motion-controls.rules
+
+SUBSYSTEM=="input", ATTRS{name}=="*Controller Motion Sensors", RUN+="/bin/rm %E{DEVNAME}", ENV{ID_INPUT_JOYSTICK}=""
+SUBSYSTEM=="input", ATTRS{name}=="*Controller Touchpad", RUN+="/bin/rm %E{DEVNAME}", ENV{ID_INPUT_JOYSTICK}=""
+
+This should work in USB and Bluetooth mode.
+Categories:
+
+    Input devicesGaming
+
+    This page was last edited on 3 February 2023, at 20:34.
+    Content is available under GNU Free Documentation License 1.3 or later unless otherwise noted.
+
+    Privacy policy
+    About ArchWiki
+    Disclaimers
+

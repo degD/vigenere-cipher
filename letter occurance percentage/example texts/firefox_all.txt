@@ -1,0 +1,204 @@
+
+Search Thousands of Tech Definitions
+Browse Definitions :
+
+    A
+    B
+    C
+    D
+    E
+    F
+    G
+    H
+    I
+    J
+    K
+    L
+    M
+    N
+    O
+    P
+    Q
+    R
+    S
+    T
+    U
+    V
+    W
+    X
+    Y
+    Z
+    #
+
+Login Register
+
+    Techtarget Network
+    Tech Accelerator
+    Webinars
+
+RSS
+
+    WhatIs.com
+    Browse Definitions Internet technologies
+    Quick Study Resources
+
+    Follow: 
+
+    Home Internet technologies 
+
+Definition
+Firefox
+
+Nick Barney
+By
+
+    Nick Barney, Technology Writer
+
+What is Firefox?
+
+Firefox is a free, open source web browser developed by the Mozilla Foundation and Mozilla Corporation in 2004. The Firefox web browser can be used with Windows, Mac and Linux operating systems, as well as Android and iOS mobile devices. Firefox uses the Google search page as its homepage and default search engine.
+
+Firefox is guided by The Mozilla Manifesto, a set of principles the nonprofit Mozilla Foundation developed. Firefox's privacy and open source principles make it a unique web browser. Unlike Apple's Safari and Google Chrome, Firefox does not sell users' personal data to advertisers or to services like Google.
+
+Firefox introduced and popularized many of today's standard browser features. When the Firefox browser was first released under the name Mozilla Firefox, it was one of the first browsers to offer a bookmark toolbar and tabbed browsing, which lets users open tabs in the same window and switch back and forth among them. Mozilla Firefox also offered a pop-up blocker and a plugin that let developers add new, downloadable features known as add-ons or browser extensions.
+
+In 2016, Firefox announced Firefox Quantum, an update to its search engine that improved user experience and processing power. Quantum transitioned Firefox to a multiprocess architecture that uses less memory with many browser tabs open.
+Screenshot of Firefox homepage
+Firefox uses Google as its default browser and includes article recommendations on its homepage from Firefox Pocket.
+What is Firefox used for?
+
+Firefox is mainly used for browsing the internet like its other modern browser competitors, Chrome and Safari. However, its open source nature enables additional uses that Chrome and Safari do not offer, including the ability for developers to modify the browser, redistribute their own versions and add source code to a code repository that the Mozilla Foundation uses to officially update the browser.
+
+There are also different versions of Firefox. These include the following:
+
+    Firefox Quantum. This is the standard version of Firefox for browsing the internet. It is available for download on Mozilla.org.
+    Firefox Nightly. This is a version users and developers employ to test the browser and features in development for bugs.
+    Firefox Beta. This is a version nondevelopers use to test new features before their official release.
+    Firefox Developer Edition. This is a web development version developers use to track cascading style sheets and JavaScript; it includes a JavaScript debugger for users building their own sites.
+    Firefox Extended Support Release (ESR), or Firefox Enterprise. This is the enterprise version of Firefox that lets organizations deploy the browser at scale. ESR updates once a year unlike the standard Firefox browser that updates more frequently.
+
+Screenshot of Firefox web developer tool
+Firefox has a developer tool built into its browser that lets web developers access webpage code at the bottom of their screens.
+Features of Firefox
+
+The Firefox Quantum browser comes with several features, including the following:
+
+    Extensions and add-ons are security and ease-of-use features Firefox's open source community creates. To Google Translate is a Firefox extension that uses Google Translate to automatically translate pages into a user's desired language.
+    Multiprocess memory use enables Firefox Quantum to use less memory than previous versions when users have multiple webpages open in tabs.
+    Private browsing with improved privacy features automatically erases passwords, cookies and history after a browsing session. Firefox's private browsing modes also block hidden trackers embedded in ads that slow performance.
+    Ad blocker prevents ads from showing on webpages, including video ads, ads with trackers and third-party cookies.
+    Customization settings let users change their browser's colors and add themes, such as Space Galaxy, which includes images and colors associated with space.
+    Fingerprint blocking prevents companies from creating unique profiles of users based on their hardware, software, add-ons, default web browser and other preferences, such as fonts. Companies use these fingerprints for targeted advertising campaigns and for surveillance capitalism
+    Syncing enables users to access their Firefox settings and data, including passwords and open tabs, across multiple devices by storing their data on a private, encrypted key on Firefox servers.
+    Picture-in-Picture lets users watch videos while on other pages. It pops a video into a separate window and pins it to the screen.
+    Password manager stores users' passwords and syncs them across devices.
+
+Screenshot of Firefox add-on and customization page
+Firefox lets users develop and download add-on features and customize the appearance of their browser.
+
+Firefox offers free browsers for desktop, mobile and enterprise use. It also offers products built around its browser, such as the following:
+
+    Firefox Monitor. This is a free service that monitors and alerts a user if their personal information has been compromised in a data breach.
+    Mozilla VPN. This is a paid virtual private network (VPN) service that encrypts a user's network activity and IP address and connects to more than 500 servers in over 30 countries.
+    Firefox Relay. This is a service with free and paid versions that lets users anonymize their emails. Relay blocks websites from seeing a user's real email address when they sign up for a service or buy a product. Mozilla automatically forwards emails associated with the website to the user. Premium versions block promotional emails, mask phone numbers and provide access to Mozilla VPN.
+    Firefox Focus. This is a free private browsing service for mobile devices that blocks ad and social trackers that collect user data and sell it to advertisers.
+    Pocket. This is a free service that lets users collect interesting content from the internet, listen to audio versions of the articles, and block pop-ups and ad banners associated with the original article's webpage.
+
+List of Firefox privacy settings
+Firefox has several protective privacy settings, including blocking third-party cookies by default. Businesses use third-party cookies for targeted advertising.
+What are the pros and cons of Firefox?
+
+The latest version of the Firefox browser, Firefox Quantum, has several pros and cons.
+Pros
+
+Security and privacy features. Firefox blocks cryptomining scripts, social trackers, third-party tracking cookies and fingerprinting. These privacy features prevent companies from collecting and selling user data to companies for targeted marketing. They also prevent other organizations from creating customer profiles based on tracking user behavior and system preferences.
+
+Free open source technology. Because it's open source, users can experiment with Firefox code, modify the browser and write code that Mozilla sometimes uses to create new features and updates.
+
+Extensions and customization options. Firefox provides some unique security and functionality add-ons. These include HTTPS-Only Mode, which blocks access to sites that don't use Hypertext Transfer Protocol Secure, or HTTPS, and customization features, like downloadable themes and colors.
+
+Multiprocess architecture. This helps distribute Firefox's processing, so Firefox Quantum uses less RAM under heavy loads, such as when multiple windows are open at the same time.
+Cons
+
+RAM use. Firefox uses more RAM than popular browsers like Google Chrome.
+
+Small market share. According to StatCounter, Firefox had only 3% of the global market share for web browsers as of November 2022. It laid off a quarter of its workforce in 2020, raising concerns about the future of the Mozilla Foundation and the Firefox browser.
+
+Learn more about how Firefox stacks up against popular browsers like Chrome and Safari.
+This was last updated in December 2022
+Continue Reading About Firefox
+
+    Comparing data protection vs. data security vs. data privacy
+
+    An introduction to Edge Chromium vs. Edge
+
+    How remote browser isolation can mitigate cyber threats
+
+    Why the browser is the computer
+
+    Browser updates require human intervention
+
+Related Terms
+
+blockchain decentralization
+    Decentralization is the distribution of functions, control and information instead of being centralized in a single entity. See complete definition 
+IP address (Internet Protocol address)
+    Internet Protocol (IP) address is a unique numerical identifier for every device or network that connects to the internet. See complete definition 
+wiki
+    A wiki is a web-based collaborative platform that enables users to store, create and modify content in an organized manner. See complete definition 
+
+Word of the Day
+voice recognition
+
+Voice or speaker recognition is the ability of a machine or program to receive and interpret dictation or to understand and perform spoken commands.
+20 Newest and Updated Terms
+
+    cloud IDE
+    AWS On-Demand Instances (Amazon Web Services On-Demand Instances)
+    mission-critical application
+    virtual address
+    newsgroup
+    multi-tenant cloud
+    passive reconnaissance
+    audit program (audit plan)
+    WebAuthn API
+    Google Mobile Services (GMS)
+    Siri
+    push notification
+    blockchain decentralization
+    Common Vulnerability Scoring System (CVSS)
+    single-tenancy
+    Windows 7
+    Pinterest
+    container repository
+    circular economy
+    kilobyte (KB or Kbyte)
+
+Latest TechTarget resources
+
+    Networking
+    Security
+    CIO
+    HR Software
+    Customer Experience
+
+Networking
+
+    network management system
+
+    A network management system, or NMS, is an application or set of applications that lets network engineers manage a network's ...
+    host (in computing)
+
+    A host is a computer or other device that communicates with other hosts on a network.
+    Network as a Service (NaaS)
+
+    Network as a service, or NaaS, is a business model for delivering enterprise WAN services virtually on a subscription basis.
+
+    Browse by Topic Browse Resources 
+
+    About Us Meet The Editors Editorial Ethics Policy Contact Us Advertisers Business Partners Events Media Kit Corporate Site Reprints 
+
+All Rights Reserved, Copyright 1999 - 2023, TechTarget
+
+Privacy Policy
+Do Not Sell or Share My Personal Information

@@ -1,0 +1,37 @@
+
+Security
+Embed security into the developer workflow. With GitHub, developers can secure their code in minutes and organizations can automatically comply with regulations.
+cmake.yml
+on: push
+
+    Build
+    1m 21s
+
+Steps
+
+Initialize CodeQL
+1m 42s
+Autobuild
+1m 24s
+
+    Perform CodeQL Analyses
+    1m 36s
+
+GitHub Advanced Security lets you gain visibility into your security posture, respond to threats proactively, and ship secure applications quickly.
+Get GitHub Advanced Security
+Did you know?
+56 million projects
+
+fixed vulnerabilities with GitHub2
+
+Secret scanning automatically looks for partner patterns and prevents fraudulent use of accidentally committed secrets.
+Read about secret scanning
+
+Dependabot makes it easy to find and fix vulnerable dependencies in your supply chain.
+Explore Dependabot
+
+Code scanning is GitHub’s static code analysis tool that helps you remediate issues in your code.
+Download the latest SAST ebook
+The place for anyone from anywhere to build anything
+
+Whether you’re scaling your startup or just learning how to code, GitHub is your home. Join the world’s largest developer platform to build the innovations that empower humanity. Let’s build from here.

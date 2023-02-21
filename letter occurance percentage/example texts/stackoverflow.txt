@@ -1,0 +1,451 @@
+
+Stack Overflow
+
+    About
+    Products
+    For Teams
+
+    Home
+        Public
+
+Questions
+Tags
+Users
+Companies
+Collectives
+
+    Explore Collectives
+
+    Teams
+    Stack Overflow for Teams – Start collaborating and sharing organizational knowledge. 
+
+What is shortcut for uncomment in Visual Studio Code?
+Asked 4 years, 6 months ago
+Modified 4 months ago
+Viewed 115k times
+57
+
+Old way with CTRL + K CTRL + C works for commenting but old way CTRL + K CTRL + U not working anymore for uncomment, if anyone know new shortcut I will be grateful. Thanks.
+
+    visual-studio-codecomments
+
+Share
+Improve this question
+Follow
+edited Jul 18, 2018 at 8:53
+nvoigt's user avatar
+nvoigt
+73k2626 gold badges9494 silver badges139139 bronze badges
+asked Jul 17, 2018 at 13:46
+user9160346
+
+    have you checked to make sure you didn't overwrite the shortcut's key binding? – 
+    R Balasubramanian
+    Jul 17, 2018 at 13:49
+    1
+    There is no Visual Studio 2018. Please post your version. Use the correct tag with version number if possible. – 
+    nvoigt
+    Jul 17, 2018 at 13:52
+    Visual Studio 1.25.1 – user9160346
+    Jul 17, 2018 at 14:11
+    I did not change anything in the configuration, I only updated regular updates. – user9160346
+    Jul 17, 2018 at 14:18
+    version 1.25.1 on w7 64bit – user9160346
+    Jul 17, 2018 at 14:21
+
+Show 3 more comments
+16 Answers
+Sorted by:
+55
+
+I just updated my VSCode to the version you mentioned. The combinations work exactly as you described. It must be something that was changed on your computer.
+
+Go to File => Preferences => Keyboard Shortcuts
+
+(Or press CTRL + K and then CTRL + S)
+
+look for Remove Line Comment. In my settings it still says
+
+enter image description here
+
+If your VSCode has a different keybinding, change it back to what you want.
+Share
+Improve this answer
+Follow
+answered Jul 18, 2018 at 9:53
+nvoigt's user avatar
+nvoigt
+73k2626 gold badges9494 silver badges139139 bronze badges
+
+    In my is the same but command not working.Never mind,i will use CRTL + SHIFT + / for commenting multi lines and same for uncomment.This shortcut works.Thanks. – user9160346
+    Jul 18, 2018 at 12:47
+    1
+    not working for me as well. Same issue as the above user9160346 – 
+    Vicky
+    Nov 27, 2018 at 17:02
+    1
+    check if you have two same combination of keys - one for remove line comment and the other one for transform to uppercase. Remove the latter and everything works again;) – 
+    user2923339
+    Oct 6, 2020 at 21:26
+    It is working for me. And yea it is the default keybinding , if anyone's wondering. – 
+    Lalit Rao
+    Jun 27, 2022 at 16:40
+
+Add a comment
+37
+
+I had the same problem. In the newer version its actually CTRL+/ to uncomment.
+Share
+Improve this answer
+Follow
+edited May 10, 2021 at 7:44
+answered Aug 24, 2018 at 20:50
+Egon Allison's user avatar
+Egon Allison
+1,24911 gold badge1212 silver badges2222 bronze badges
+
+    I agreed,now i am using Ubuntu 16.04 and everything works well,i think than windows isnt the best solution for web development.Here works properly both CTRL+K CTRL+C for comment and CTRL+U for uncomment. – user9160346
+    Aug 25, 2018 at 8:56
+    Hi @GoranIlic thanks for your feedback. I suppose it's then slightly different for different operating systems. I was using windows at the time of answering this question. – 
+    Egon Allison
+    Oct 11, 2018 at 14:00
+    1
+    Now on my Linux Ubuntu 18.04 works fine as expected. – user9160346
+    Oct 15, 2018 at 8:42
+    1
+    It works for me, but this one is for toggle i suppose. – 
+    Lalit Rao
+    Jun 27, 2022 at 16:41
+
+Add a comment
+15
+
+CTRL+/
+
+Note that this is the / on the numeric keypad!
+Share
+Improve this answer
+Follow
+edited Feb 14, 2019 at 15:51
+Wai Ha Lee's user avatar
+Wai Ha Lee
+8,4197777 gold badges6060 silver badges9090 bronze badges
+answered Feb 14, 2019 at 15:09
+Bened's user avatar
+Bened
+19911 silver badge33 bronze badges
+Add a comment
+11
+
+Mac OS you can use COMMAND + / for commenting and uncommenting
+Share
+Improve this answer
+Follow
+answered Apr 28, 2019 at 11:34
+Unnikrishnan's user avatar
+Unnikrishnan
+2,48955 gold badges2121 silver badges3939 bronze badges
+
+    How to remove multiline comments in Mac OS /*  */ ? – 
+    ajaysinghnegi
+    Aug 16, 2019 at 7:00
+    2
+    @Jos - Shift + option + A – 
+    Unnikrishnan
+    Aug 16, 2019 at 7:08
+    1
+    Same on linux Mint – 
+    Marcelo Agimóvel
+    Nov 28, 2019 at 19:47
+
+Add a comment
+8
+
+In windows Inorder to comment and uncomment the code in VS CODE
+
+    CTRL + K ========> to comment the code
+    CTRL + / ========> to uncomment the code
+
+Share
+Improve this answer
+Follow
+answered Jun 10, 2020 at 9:10
+Bathri Nathan's user avatar
+Bathri Nathan
+1,02122 gold badges1313 silver badges1717 bronze badges
+Add a comment
+4
+
+use ctrl+ / to uncomment in VS Code.
+Share
+Improve this answer
+Follow
+answered Mar 6, 2019 at 7:51
+Ashutosh Dash's user avatar
+Ashutosh Dash
+57222 gold badges66 silver badges1515 bronze badges
+Add a comment
+3
+
+On Windows, I am using strg + #
+
+It's a default shortcut in VSCode --> toggle line comment but it works also for blocks.
+Share
+Improve this answer
+Follow
+edited Apr 25, 2019 at 7:44
+Pingolin's user avatar
+Pingolin
+2,93166 gold badges2222 silver badges3838 bronze badges
+answered Apr 25, 2019 at 6:31
+Markus Morley's user avatar
+Markus Morley
+4122 bronze badges
+Add a comment
+3
+
+In windows system, below commands works for me for comment and uncomment in VS CODE-
+
+CTRL + K --- to comment OR CTRL + / ---to comment
+
+CTRL + / --- to uncomment
+Share
+Improve this answer
+Follow
+answered Sep 27, 2021 at 13:42
+Jaydeep Shil's user avatar
+Jaydeep Shil
+1,7942020 silver badges2020 bronze badges
+Add a comment
+2
+
+For windows:
+
+Remove Comment Line:- ctrl+k ctrl+u
+Share
+Improve this answer
+Follow
+edited Feb 12, 2021 at 21:24
+Ran Marciano's user avatar
+Ran Marciano
+1,38155 gold badges1313 silver badges3030 bronze badges
+answered Feb 12, 2021 at 8:17
+Priyanka Vadhwani's user avatar
+Priyanka Vadhwani
+82677 silver badges1010 bronze badges
+
+    Thanks, that one worked for me. Even in VS 2022 Community Version. :-) – 
+    holbizmetrics
+    Nov 27, 2022 at 16:18
+
+Add a comment
+1
+
+For Mac OS just select all the stuff you want to comment or uncomment and press Command + /
+Share
+Improve this answer
+Follow
+edited May 26, 2020 at 20:42
+Chris Catignani's user avatar
+Chris Catignani
+4,8081313 gold badges4343 silver badges4848 bronze badges
+answered May 26, 2020 at 18:48
+Sagar's user avatar
+Sagar
+40444 silver badges1212 bronze badges
+Add a comment
+1
+
+What worked for me is : CTRL + Shift + K enter image description here
+Share
+Improve this answer
+Follow
+answered May 30, 2020 at 5:55
+krul's user avatar
+krul
+2,21144 gold badges3030 silver badges4949 bronze badges
+Add a comment
+1
+
+I'm using VS code on Mac, Version: 1.49.0 and I had similar problem. In my case shortcut "cmd + k, cmd + u" made text uppercase. It turned out I have two commands assigned to this shortcut. In "Keyboard Shortcuts" you can also filter by shortcuts (or "Keybindings") by pressing keyboard icon on the right in the search bar, it will record keys:
+
+enter image description here
+
+To fix this, I just changed "Transform to Uppercase" Keybinding to something else as I rarely use it.
+Share
+Improve this answer
+Follow
+answered Sep 24, 2020 at 22:40
+Tom K's user avatar
+Tom K
+14511 silver badge77 bronze badges
+
+    Exactly the same situation here. Should probably be the accepted answer. Switching to another combination of keys is not a solution. – 
+    user2923339
+    Oct 6, 2020 at 21:25
+
+Add a comment
+1
+
+Take care. Some extensions change the keyboard shortcuts. Take a look in the attached screenshot. I don't know what extension changed mine to Shift + Ctrl + K on Windows.
+
+enter image description here
+Share
+Improve this answer
+Follow
+answered Mar 29, 2021 at 17:41
+Ricardo Maroquio's user avatar
+Ricardo Maroquio
+42444 silver badges88 bronze badges
+Add a comment
+0
+
+I recommend instead of using separate shortcuts for add/remove comment to set toggle line/block comment with the same shortcut so it also remove comment when the line/block is commented out:
+
+    editor.action.commentLine
+    editor.action.blockComment
+
+Share
+Improve this answer
+Follow
+answered Sep 24, 2022 at 8:53
+zemiacsik's user avatar
+zemiacsik
+4111 silver badge66 bronze badges
+Add a comment
+0
+
+you can use
+
+Ctrl + /
+
+for both comment and uncomment the code in vscode
+Share
+Improve this answer
+Follow
+answered Sep 24, 2022 at 8:58
+Niraj Gautam's user avatar
+Niraj Gautam
+15866 bronze badges
+Add a comment
+0
+
+Use CTRL+/ for both comment and uncomment.
+
+Also here is the cheatsheet with all shortcuts. https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf
+Share
+Improve this answer
+Follow
+answered Sep 24, 2022 at 12:02
+Mithun Wijayasiri's user avatar
+Mithun Wijayasiri
+11277 bronze badges
+Add a comment
+Highly active question. Earn 10 reputation (not counting the association bonus) in order to answer this question. The reputation requirement helps protect this question from spam and non-answer activity.
+
+    The Overflow Blog
+
+Why developer experience is the key to better software, straight from the...
+
+    The frontier of computing: Q&A with IBM quantum computing research
+    Featured on Meta
+    Accessibility Update: Colors
+    2022: a year in moderation
+    Should we burninate the [balance] tag?
+    Collectives: The next iteration
+    Temporary policy: ChatGPT is banned
+
+Related
+1472
+What's a quick way to comment/uncomment lines in Vim?
+1396
+Vertical rulers in Visual Studio Code
+988
+How do you format code in Visual Studio Code (VSCode)?
+610
+How to use Visual Studio Code as default editor for git?
+943
+Multiline editing in Visual Studio Code
+1253
+How do I collapse sections of code in Visual Studio Code for Windows?
+1061
+How do I search for files in Visual Studio Code?
+802
+What are the differences between Visual Studio Code and Visual Studio?
+848
+What is a 'workspace' in Visual Studio Code?
+Hot Network Questions
+
+    Can a creature be targeted by future uses of eyebite if they are immune to the initial casting?
+    A standard way of marking alternate tunings for classical guitar?
+    Overwriting layers in ArcGIS Online
+    Route from North Scotland to Stockholm with no air travel
+    Does the iPad Pro M2 (4th generation) support 6Ghz Wi-Fi?
+    How to deal with a professor in the department undermining my field of research to colleagues and other professors?
+    Compute "negative" version of vector of vectors
+    How do I erase sets of solutions from Solve based on criteria?
+    Why is the solstice the first day of summer, and not the central day?
+    Why are none of these chips identifiable?
+    Is 'comme platine' an idiom
+    Why is witness data downloaded during IBD in prune mode?
+    How would you say "mindless fun" in German
+    Is there a cutoff for Newtonian gravity?
+    Is Metapost still relevant in the age of Lua etc.?
+    How to assign pointer to a rank 2 MTensor in Mathematica C code?
+    Can a vampire rest in a coffin in a bag of holding?
+    Does it matter if you don't preheat the oven for frozen French fries
+    Why are atoms electrically neutral?
+    Can "né" or "née" be used to refer to a religious's secular name?
+    Are there any Oxford Colleges which will accommodate a family including children
+    Ada and its candidate languages
+    Agile Principles: What does it mean sustainable development?
+    Books containing new results
+
+Question feed
+
+Stack Overflow
+
+    Questions
+    Help
+
+Products
+
+    Teams
+    Advertising
+    Collectives
+    Talent
+
+Company
+
+    About
+    Press
+    Work Here
+    Legal
+    Privacy Policy
+    Terms of Service
+    Contact Us
+    Cookie Settings
+    Cookie Policy
+
+Stack Exchange Network
+
+    Technology
+    Culture & recreation
+    Life & arts
+    Science
+    Professional
+    Business
+    API
+    Data
+
+    Blog
+    Facebook
+    Twitter
+    LinkedIn
+    Instagram
+
+Site design / logo © 2023 Stack Exchange Inc; user contributions licensed under CC BY-SA. rev 2023.2.6.43221
+
+Your privacy
+
+By clicking “Accept all cookies”, you agree Stack Exchange can store cookies on your device and disclose information in accordance with our Cookie Policy.
